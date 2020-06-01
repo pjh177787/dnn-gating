@@ -1,5 +1,7 @@
 # dnn-gating
 
+Forked from cornell-zhang/dnn-gating
+
 ```dnn-gating``` is a collective repository of [precision-gating](https://arxiv.org/abs/2002.07136) and [channel-gating](https://arxiv.org/abs/1805.12549) reimplemented in Pytorch.
 
 ## Precision Gating (PG)
