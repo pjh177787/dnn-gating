@@ -56,8 +56,8 @@ class BasicBlock(nn.Module):
                                        stride=1, padding=1, bias=False, 
                                        wbits=kwargs['wbits'], abits=kwargs['abits'])
         self.bn2 = nn.BatchNorm2d(planes)
-        self.relu = q.PactReLU() if kwargs['pact'] else nn.ReLU()        
-
+        # self.relu = q.PactReLU() if kwargs['pact'] else nn.ReLU()        
+        self.relu = nn.PReLU()
         self.shortcut = nn.Sequential()
         if stride != 1 or in_planes != planes:
             if option == 'A':
@@ -93,8 +93,8 @@ class ResNet(nn.Module):
         self.layer2 = self._make_layer(block, 32, num_blocks[1], stride=2, **kwargs)
         self.layer3 = self._make_layer(block, 64, num_blocks[2], stride=2, **kwargs)
         self.linear = nn.Linear(64, num_classes)
-        self.relu = q.PactReLU() if kwargs['pact'] else nn.ReLU()
-
+        # self.relu = q.PactReLU() if kwargs['pact'] else nn.ReLU()
+        self.relu = nn.PReLU()
         self.apply(_weights_init)
 
     def _make_layer(self, block, planes, num_blocks, stride, **kwargs):
