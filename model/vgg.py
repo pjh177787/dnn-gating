@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.model_zoo import load_url as load_state_dict_from_url
+import utils.pg_utils as q
 
 
 __all__ = [
@@ -190,7 +191,8 @@ def make_layers(cfg, batch_norm=True):
         if v == 'M':
             layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
         else:
-            conv2d = quanConv2d(in_channels, v, kernel_size=3, padding=1)
+            conv2d = q.QuantizedConv2d(in_channels, v, kernel_size=3, padding=1, wbits=2, abits=3)
+            # conv2d = quanConv2d(in_channels, v, kernel_size=3, padding=1)
             if batch_norm:
                 layers += [conv2d, nn.BatchNorm2d(v)]
             else:
