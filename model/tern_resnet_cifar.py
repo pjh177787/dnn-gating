@@ -9,25 +9,27 @@ warnings.filterwarnings("ignore")
 
 class _quanFunc(torch.autograd.Function):
 
-    def __init__(self, tfactor):
-        super(_quanFunc,self).__init__()
-        self.tFactor = tfactor
+    # def __init__(self, tfactor):
+    #     super(_quanFunc,self).__init__()
+    #     self.tFactor = tfactor
 
-    def forward(self, input):
-        self.save_for_backward(input)
+    @staticmethod
+    def forward(ctx, input):
+        ctx.save_for_backward(input)
         max_w = input.abs().max()
-        self.th = self.tFactor*max_w #threshold
+        th = 0.05*max_w #threshold
         output = input.clone().zero_()
-        self.W = input[input.ge(self.th)+input.le(-self.th)].abs().mean()
-        output[input.ge(self.th)] = self.W
-        output[input.lt(-self.th)] = -self.W
+        W = input[input.ge(th)+input.le(-th)].abs().mean()
+        output[input.ge(th)] = W
+        output[input.lt(-th)] = -W
 
         return output
 
-    def backward(self, grad_output):
+    @staticmethod
+    def backward(ctx, grad_output):
         # saved tensors - tuple of tensors with one element
         grad_input = grad_output.clone()
-        input, = self.saved_tensors
+        input, = ctx.saved_tensors
         grad_input[input.ge(1)] = 0
         grad_input[input.le(-1)] = 0
         return grad_input
@@ -36,8 +38,8 @@ class _quanFunc(torch.autograd.Function):
 class quanConv2d(nn.Conv2d):
 
     def forward(self, input):
-        tfactor_list = [0.05]
-        weight = _quanFunc(tfactor=tfactor_list[0])(self.weight)
+        # tfactor_list = [0.05]
+        weight = _quanFunc().apply(self.weight)
         output = F.conv2d(input, weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         
         return output 
@@ -45,8 +47,8 @@ class quanConv2d(nn.Conv2d):
 class quanLinear(nn.Linear):
 
     def forward(self, input):
-        tfactor_list = [0.05]
-        weight = _quanFunc(tfactor=tfactor_list[0])(self.weight)
+        # tfactor_list = [0.05]
+        weight = _quanFunc().apply(self.weight)
         output = F.linear(input, weight, self.bias)
 
         return output
