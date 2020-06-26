@@ -139,15 +139,15 @@ class CifarResNet(nn.Module):
 
     self.num_classes = num_classes
 
-    self.conv_1_3x3 = nn.Conv2d(3, 128, kernel_size=3, stride=1, padding=1, bias=False)
-    self.bn_1 = nn.BatchNorm2d(128)
+    self.conv_1_3x3 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+    self.bn_1 = nn.BatchNorm2d(64)
 
-    self.inplanes = 128
-    self.stage_1 = self._make_layer(block, 128, layer_blocks, 1)
-    self.stage_2 = self._make_layer(block, 256, layer_blocks, 2)
-    self.stage_3 = self._make_layer(block, 512, layer_blocks, 2)
+    self.inplanes = 64
+    self.stage_1 = self._make_layer(block, 64, layer_blocks, 1)
+    self.stage_2 = self._make_layer(block, 128, layer_blocks, 2)
+    self.stage_3 = self._make_layer(block, 256, layer_blocks, 2)
     self.avgpool = nn.AvgPool2d(8)
-    self.classifier = nn.Linear(512*block.expansion, num_classes)
+    self.classifier = nn.Linear(256*block.expansion, num_classes)
 
     for m in self.modules():
       if isinstance(m, nn.Conv2d):
